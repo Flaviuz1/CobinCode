@@ -1,0 +1,31 @@
+<HTML>
+	<head>
+		<title>Cobin</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="styling.css">
+		<script type="module" src="wiring.js" defer></script>
+	</head>
+	<body class="body">
+		<select id="lang-select">
+			<option value="">Plain</option>
+			<option value="js">JavaScript</option>
+			<option value="py">Python</option>
+			<option value="cpp">C++</option>
+			<option value="java">Java</option>
+			<option value="c">C</option>
+			<option value="rs">Rust</option>
+			<option value="go">Go</option>
+		</select>
+		<button id="copy-btn">⎘</button>
+		<div class="editor" id="editor"></div>
+		<div id="run-toolbar">
+			<button id="run-btn">▶ Run</button>
+		</div>
+		<div id="output-panel">
+			<span id="stdin-label">STDIN</span>
+    		<textarea id="stdin-input" placeholder="program input..."></textarea>
+			<span id="output-label">output</span>
+			<pre id="output"></pre>
+		</div>
+  	</body>
+</HTML>
