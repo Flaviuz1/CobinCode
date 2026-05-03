@@ -12,7 +12,6 @@ import { go } from "https://esm.sh/@codemirror/lang-go@6";
 import { php } from "https://esm.sh/@codemirror/lang-php@6";
 import { sql } from "https://esm.sh/@codemirror/lang-sql@6";
 
-// ── Encoding ──────────────────────────────────────────────
 
 async function encode(text) {
     const stream = new CompressionStream("deflate-raw");
@@ -45,7 +44,6 @@ function fromBase64(str) {
     return new TextDecoder().decode(Uint8Array.from(atob(str), c => c.charCodeAt(0)));
 }
 
-// ── Languages ─────────────────────────────────────────────
 
 const langs = {
     js:     javascript(),
@@ -58,9 +56,9 @@ const langs = {
     go:     go(),
     php:    php(),
     sql:    sql(),
-    cs:     java(),   // no C# mode, java highlighting is close enough
-    kotlin: java(),   // same
-    swift:  cpp(),    // same
+    cs:     java(),// no C# mode, java highlighting is close enough
+    kotlin: java(),
+    swift:  cpp(),
 };
 
 const judge0Langs = {
@@ -79,7 +77,6 @@ const judge0Langs = {
     rb:     72,
 };
 
-// ── Editor ────────────────────────────────────────────────
 
 const langCompartment = new Compartment();
 
@@ -96,37 +93,38 @@ const view = new EditorView({
     ]
 });
 
-// ── Hash ──────────────────────────────────────────────────
 
 async function updateHash() {
     const lang    = document.getElementById("lang-select").value;
     const stdin   = document.getElementById("stdin-input").value;
     const content = view.state.doc.toString();
     window.location.hash = `${lang}~${await encode(stdin)}~${await encode(content)}`;
+	console.log(window.location.hash);
 }
 
-if (window.location.hash) {
-    const parts = window.location.hash.slice(1).split("~");
-    if (parts.length === 3) {
-        const [lang, stdin, content] = parts;
+setTimeout(async () => {
+    if (window.location.hash) {
+        const parts = window.location.hash.slice(1).split("~");
+        if (parts.length === 3) {
+            const [lang, stdin, content] = parts;
 
-        if (lang && langs[lang]) {
-            document.getElementById("lang-select").value = lang;
-            view.dispatch({ effects: langCompartment.reconfigure(langs[lang]) });
-        }
+            if (lang && langs[lang]) {
+                document.getElementById("lang-select").value = lang;
+                view.dispatch({ effects: langCompartment.reconfigure(langs[lang]) });
+            }
 
-        if (stdin) {
-            document.getElementById("stdin-input").value = await decode(stdin);
-        }
+            if (stdin) {
+                document.getElementById("stdin-input").value = await decode(stdin);
+            }
 
-        if (content) {
-            const text = await decode(content);
-            view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } });
+            if (content) {
+                const text = await decode(content);
+                view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } });
+            }
         }
     }
-}
+}, 100);
 
-// ── UI ────────────────────────────────────────────────────
 
 document.getElementById("copy-btn").addEventListener("click", () => {
     navigator.clipboard.writeText(window.location.href);
@@ -143,7 +141,6 @@ document.getElementById("lang-select").addEventListener("change", (e) => {
 
 document.getElementById("stdin-input").addEventListener("input", updateHash);
 
-// ── Runner ────────────────────────────────────────────────
 
 document.getElementById("run-btn").addEventListener("click", async () => {
     const langKey   = document.getElementById("lang-select").value;
